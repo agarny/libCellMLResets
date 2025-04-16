@@ -14,6 +14,7 @@ int main()
     double *constants = createConstantsArray();
     double *computedConstants = createComputedConstantsArray();
     double *algebraic = createAlgebraicArray();
+    double *resetConditions = createResetConditionsArray();
 
     // Initialise our states, rates, constants, computed constants, and algebraic variables and output their initial
     // value/guess.
@@ -70,7 +71,7 @@ int main()
 
             // Check for resets.
 
-            while (applyResets(voi, states, rates, constants, computedConstants, algebraic) == 1) {
+            while (applyResets(voi, states, rates, constants, computedConstants, algebraic, resetConditions) == 1) {
                 computeVariables(voi, states, rates, constants, computedConstants, algebraic);
             }
         } while (voi < voiEnd);
@@ -89,6 +90,7 @@ int main()
     deleteArray(constants);
     deleteArray(computedConstants);
     deleteArray(algebraic);
+    deleteArray(resetConditions);
 
     return 0;
 }

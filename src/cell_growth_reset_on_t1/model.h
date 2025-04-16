@@ -28,6 +28,7 @@ double * createStatesArray();
 double * createConstantsArray();
 double * createComputedConstantsArray();
 double * createAlgebraicArray();
+double * createResetConditionsArray();
 
 void deleteArray(double *array);
 
@@ -36,4 +37,4 @@ void computeComputedConstants(double *constants, double *computedConstants);
 void computeRates(double voi, double *states, double *rates, double *constants, double *computedConstants, double *algebraic);
 void computeVariables(double voi, double *states, double *rates, double *constants, double *computedConstants, double *algebraic);
 
-int applyResets(double voi, double *states, double *rates, double *constants, double *computedConstants, double *algebraic);
+int applyResets(double voi, double *states, double *rates, double *constants, double *computedConstants, double *algebraic, double *resetConditions);

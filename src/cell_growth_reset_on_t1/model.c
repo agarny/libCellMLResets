@@ -12,6 +12,7 @@ const size_t STATE_COUNT = 1;
 const size_t CONSTANT_COUNT = 0;
 const size_t COMPUTED_CONSTANT_COUNT = 0;
 const size_t ALGEBRAIC_COUNT = 0;
+const size_t RESET_CONDITIONS_COUNT = 1;
 
 const VariableInfo VOI_INFO = {"t", "dimensionless", "main"};
 
@@ -72,6 +73,17 @@ double * createAlgebraicArray()
     return res;
 }
 
+double * createResetConditionsArray()
+{
+    double *res = (double *) malloc(RESET_CONDITIONS_COUNT*sizeof(double));
+
+    for (size_t i = 0; i < RESET_CONDITIONS_COUNT; ++i) {
+        res[i] = NAN;
+    }
+
+    return res;
+}
+
 void deleteArray(double *array)
 {
     free(array);
@@ -95,16 +107,16 @@ void computeVariables(double voi, double *states, double *rates, double *constan
 {
 }
 
-int fuzzyCompare(double pNb1, double pNb2)
+int isNearlyZero(double value)
 {
-    #define ONE_TRILLION 1000000000000.0
-
-    return (fabs(pNb1 - pNb2) * ONE_TRILLION <= fmin(fabs(pNb1), fabs(pNb2))) ? 1 : 0;
+    return fabs(value) <= 1e-7;
 }
 
-int applyResets(double voi, double *states, double *rates, double *constants, double *computedConstants, double *algebraic)
+int applyResets(double voi, double *states, double *rates, double *constants, double *computedConstants, double *algebraic, double *resetConditions)
 {
-    if (fuzzyCompare(states[0], 2.0)) {
+    resetConditions[0] = states[0] - 2.0;
+
+    if (isNearlyZero(resetConditions[0])) {
         states[0] = 1.0;
 
         return 1;
