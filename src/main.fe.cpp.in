@@ -67,6 +67,12 @@ int main()
             // Compute our variables.
 
             computeVariables(voi, states, rates, constants, computedConstants, algebraic);
+
+            // Check for resets.
+
+            while (applyResets(voi, states, rates, constants, computedConstants, algebraic) == 1) {
+                computeVariables(voi, states, rates, constants, computedConstants, algebraic);
+            }
         } while (voi < voiEnd);
 
         // Output the value of our states, constants, computed constants, and algebraic variables.
