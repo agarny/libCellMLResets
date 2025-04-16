@@ -1,0 +1,88 @@
+#include "common.h"
+
+extern "C" {
+#include "model.h"
+}
+
+int main()
+{
+    // Create our various arrays.
+
+    double voi = 0.0;
+    double *states = createStatesArray();
+    double *rates = createStatesArray();
+    double *constants = createConstantsArray();
+    double *computedConstants = createComputedConstantsArray();
+    double *algebraic = createAlgebraicArray();
+
+    // Initialise our states, rates, constants, computed constants, and algebraic variables and output their initial
+    // value/guess.
+
+    initialiseVariables(states, rates, constants, computedConstants, algebraic);
+    computeComputedConstants(constants, computedConstants);
+    computeRates(voi, states, rates, constants, computedConstants, algebraic);
+    computeVariables(voi, states, rates, constants, computedConstants, algebraic);
+
+    std::ofstream file("@EXECUTABLE_SOLVER@.csv");
+
+    printHeaders(file);
+
+    // Run our model.
+
+    size_t voiCounter = 0;
+    double voiMax = @ENDING_POINT@;
+    size_t voiIntervalCounter = 0;
+    double voiInterval = @POINT_INTERVAL@;
+    double step = @STEP@;
+
+    printValues(file, voi, states, constants, computedConstants, algebraic);
+
+    do {
+        double voiEnd = ++voiIntervalCounter * voiInterval;
+        double realStep = step;
+
+        do {
+            // Check that the step is correct.
+
+            if (voi + realStep > voiEnd) {
+                realStep = voiEnd - voi;
+            }
+
+            // Compute f(t_n, Y_n).
+
+            computeRates(voi, states, rates, constants, computedConstants, algebraic);
+
+            // Compute Y_n+1.
+
+            for (size_t i = 0; i < STATE_COUNT; ++i) {
+                states[i] += realStep * rates[i];
+            }
+
+            // Update the variable of integration.
+
+            voi = fuzzyCompare(realStep, step) ?
+                      static_cast<double>(++voiCounter) * step :
+                      voiEnd;
+
+            // Compute our variables.
+
+            computeVariables(voi, states, rates, constants, computedConstants, algebraic);
+        } while (voi < voiEnd);
+
+        // Output the value of our states, constants, computed constants, and algebraic variables.
+
+        printValues(file, voi, states, constants, computedConstants, algebraic);
+    } while (voi < voiMax);
+
+    file.close();
+
+    // Clean up after ourselves.
+
+    deleteArray(states);
+    deleteArray(rates);
+    deleteArray(constants);
+    deleteArray(computedConstants);
+    deleteArray(algebraic);
+
+    return 0;
+}
