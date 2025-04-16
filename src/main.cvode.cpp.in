@@ -105,11 +105,17 @@ int main()
 
         // Check for resets.
 
-        while (applyResets(voi, states, rates, constants, computedConstants, algebraic, resetConditions) == 1) {
-            CVodeReInit(solver, voi, y);
+        do {
+            int ret = applyResets(voi, states, rates, constants, computedConstants, algebraic, resetConditions);
 
-            computeVariables(voi, states, rates, constants, computedConstants, algebraic);
-        }
+            if (ret == 0) {
+                break;
+            } else if (ret == 1) {
+                CVodeReInit(solver, voi, y);
+
+                computeVariables(voi, states, rates, constants, computedConstants, algebraic);
+            }
+        } while (true);
 
         // Output the value of our states, constants, computed constants, and algebraic variables.
 
