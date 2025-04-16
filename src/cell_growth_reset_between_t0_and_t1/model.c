@@ -112,15 +112,36 @@ int isNearlyZero(double value)
     return fabs(value) <= 1e-7;
 }
 
+int sign(double value)
+{
+    if (value > 0.0) {
+        return 1;
+    }
+
+    if (value < 0.0) {
+        return -1;
+    }
+
+    return 0;
+}
+
 int applyResets(double voi, double *states, double *rates, double *constants, double *computedConstants, double *algebraic, double *resetConditions)
 {
-    resetConditions[0] = states[0] - 2.123;
+    double resetConditions0 = states[0] - 2.123;
 
-    if (isNearlyZero(resetConditions[0])) {
+    if (isNearlyZero(resetConditions0)) {
         states[0] = 1.0;
+
+        resetConditions[0] = NAN;
 
         return 1;
     }
+
+    if (!isnan(resetConditions[0]) && (sign(resetConditions0) != sign(resetConditions[0]))) {
+        return 2;
+    }
+
+    resetConditions[0] = resetConditions0;
 
     return 0;
 }
