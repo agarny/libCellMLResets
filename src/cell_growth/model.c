@@ -94,3 +94,21 @@ void computeRates(double voi, double *states, double *rates, double *constants, 
 void computeVariables(double voi, double *states, double *rates, double *constants, double *computedConstants, double *algebraic)
 {
 }
+
+int fuzzyCompare(double pNb1, double pNb2)
+{
+    #define ONE_TRILLION 1000000000000.0
+
+    return (fabs(pNb1 - pNb2) * ONE_TRILLION <= fmin(fabs(pNb1), fabs(pNb2))) ? 1 : 0;
+}
+
+int applyResets(double voi, double *states, double *rates, double *constants, double *computedConstants, double *algebraic)
+{
+    if (fuzzyCompare(states[0], 2.0)) {
+        states[0] = 1.0;
+
+        return 1;
+    }
+
+    return 0;
+}
