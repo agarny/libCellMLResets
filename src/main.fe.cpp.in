@@ -13,6 +13,36 @@ double *constants = createConstantsArray();
 double *computedConstants = createComputedConstantsArray();
 double *algebraic = createAlgebraicArray();
 double *resetConditions = createResetConditionsArray();
+double oldVoi = NAN;
+double *oldStates = createStatesArray();
+double *oldRates = createStatesArray();
+double *oldConstants = createConstantsArray();
+double *oldComputedConstants = createComputedConstantsArray();
+double *oldAlgebraic = createAlgebraicArray();
+
+enum {
+    SizeOfDouble = sizeof(double)
+};
+
+void backupData()
+{
+    oldVoi = voi;
+    memcpy(oldStates, states, STATE_COUNT * SizeOfDouble);
+    memcpy(oldRates, rates, STATE_COUNT * SizeOfDouble);
+    memcpy(oldConstants, constants, CONSTANT_COUNT * SizeOfDouble);
+    memcpy(oldComputedConstants, computedConstants, COMPUTED_CONSTANT_COUNT * SizeOfDouble);
+    memcpy(oldAlgebraic, algebraic, ALGEBRAIC_COUNT * SizeOfDouble);
+}
+
+void retrieveData()
+{
+    voi = oldVoi;
+    memcpy(states, oldStates, STATE_COUNT * SizeOfDouble);
+    memcpy(rates, oldRates, STATE_COUNT * SizeOfDouble);
+    memcpy(constants, oldConstants, CONSTANT_COUNT * SizeOfDouble);
+    memcpy(computedConstants, oldComputedConstants, COMPUTED_CONSTANT_COUNT * SizeOfDouble);
+    memcpy(algebraic, oldAlgebraic, ALGEBRAIC_COUNT * SizeOfDouble);
+}
 
 void computeModel(double step, double voiEnd)
 {
@@ -106,6 +136,11 @@ int main()
     deleteArray(computedConstants);
     deleteArray(algebraic);
     deleteArray(resetConditions);
+    deleteArray(oldStates);
+    deleteArray(oldRates);
+    deleteArray(oldConstants);
+    deleteArray(oldComputedConstants);
+    deleteArray(oldAlgebraic);
 
     return 0;
 }
