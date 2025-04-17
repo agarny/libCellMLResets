@@ -14,6 +14,27 @@ double *computedConstants = createComputedConstantsArray();
 double *algebraic = createAlgebraicArray();
 double *resetConditions = createResetConditionsArray();
 
+void computeModel(double step, double voiEnd)
+{
+    // Compute f(t_n, Y_n).
+
+    computeRates(voi, states, rates, constants, computedConstants, algebraic);
+
+    // Compute Y_n+1.
+
+    for (size_t i = 0; i < STATE_COUNT; ++i) {
+        states[i] += step * rates[i];
+    }
+
+    // Update the VOI.
+
+    voi = voiEnd;
+
+    // Compute our variables.
+
+    computeVariables(voi, states, rates, constants, computedConstants, algebraic);
+}
+
 int main()
 {
     // Initialise our states, rates, constants, computed constants, and algebraic variables and output their initial
@@ -30,7 +51,6 @@ int main()
 
     // Run our model.
 
-    size_t voiCounter = 0;
     double voiMax = @ENDING_POINT@;
     size_t voiIntervalCounter = 0;
     double voiInterval = @POINT_INTERVAL@;
@@ -39,35 +59,24 @@ int main()
     printValues(file, voi, states, constants, computedConstants, algebraic);
 
     do {
-        double voiEnd = ++voiIntervalCounter * voiInterval;
+        size_t voiCounter = 0;
+        double fromVoi = voi;
+        double voiEnd = (++voiIntervalCounter * voiInterval > voiMax) ? voiMax : voi + voiInterval;
         double realStep = step;
 
         do {
-            // Check that the step is correct.
+            // Determine what realStep and toVoi should be.
 
-            if (voi + realStep > voiEnd) {
+            double toVoi = fromVoi + ++voiCounter * step;
+
+            if (toVoi > voiEnd) {
                 realStep = voiEnd - voi;
+                toVoi = voiEnd;
             }
 
-            // Compute f(t_n, Y_n).
+            // Compute the model.
 
-            computeRates(voi, states, rates, constants, computedConstants, algebraic);
-
-            // Compute Y_n+1.
-
-            for (size_t i = 0; i < STATE_COUNT; ++i) {
-                states[i] += realStep * rates[i];
-            }
-
-            // Update the variable of integration.
-
-            voi = fuzzyCompare(realStep, step) ?
-                      static_cast<double>(++voiCounter) * step :
-                      voiEnd;
-
-            // Compute our variables.
-
-            computeVariables(voi, states, rates, constants, computedConstants, algebraic);
+            computeModel(realStep, toVoi);
 
             // Check for resets.
 
