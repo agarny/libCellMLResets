@@ -4,13 +4,6 @@ extern "C" {
 #include "model.h"
 }
 
-bool fuzzyCompare(double pNb1, double pNb2)
-{
-    static constexpr double ONE_TRILLION = 1000000000000.0;
-
-    return std::fabs(pNb1 - pNb2) * ONE_TRILLION <= std::fmin(std::fabs(pNb1), std::fabs(pNb2));
-}
-
 void printHeaders(std::ofstream &file)
 {
     file << "voi";
