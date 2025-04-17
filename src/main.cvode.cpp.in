@@ -35,7 +35,6 @@ int main()
     double *constants = createConstantsArray();
     double *computedConstants = createComputedConstantsArray();
     double *algebraic = createAlgebraicArray();
-    double *resetConditions = createResetConditionsArray();
 
     // Initialise our states, rates, constants, computed constants, and algebraic variables and output their initial
     // value/guess.
@@ -48,10 +47,6 @@ int main()
     std::ofstream file("@EXECUTABLE_SOLVER@.csv");
 
     printHeaders(file);
-
-    // Check for reset conditions at the onset of the simulation.
-
-    applyResets(voi, states, rates, constants, computedConstants, algebraic, resetConditions);
 
     // Create our SUNDIALS context.
 
@@ -107,20 +102,6 @@ int main()
 
         computeVariables(voi, states, rates, constants, computedConstants, algebraic);
 
-        // Check for resets.
-
-        do {
-            int ret = applyResets(voi, states, rates, constants, computedConstants, algebraic, resetConditions);
-
-            if (ret == 0) {
-                break;
-            } else if (ret == 1) {
-                CVodeReInit(solver, voi, y);
-
-                computeVariables(voi, states, rates, constants, computedConstants, algebraic);
-            }
-        } while (true);
-
         // Output the value of our states, constants, computed constants, and algebraic variables.
 
         printValues(file, voi, states, constants, computedConstants, algebraic);
@@ -141,7 +122,6 @@ int main()
     deleteArray(constants);
     deleteArray(computedConstants);
     deleteArray(algebraic);
-    deleteArray(resetConditions);
 
     return 0;
 }
