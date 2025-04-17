@@ -4,18 +4,18 @@ extern "C" {
 #include "model.h"
 }
 
+// Create our various arrays.
+
+double voi = 0.0;
+double *states = createStatesArray();
+double *rates = createStatesArray();
+double *constants = createConstantsArray();
+double *computedConstants = createComputedConstantsArray();
+double *algebraic = createAlgebraicArray();
+double *resetConditions = createResetConditionsArray();
+
 int main()
 {
-    // Create our various arrays.
-
-    double voi = 0.0;
-    double *states = createStatesArray();
-    double *rates = createStatesArray();
-    double *constants = createConstantsArray();
-    double *computedConstants = createComputedConstantsArray();
-    double *algebraic = createAlgebraicArray();
-    double *resetConditions = createResetConditionsArray();
-
     // Initialise our states, rates, constants, computed constants, and algebraic variables and output their initial
     // value/guess.
 
