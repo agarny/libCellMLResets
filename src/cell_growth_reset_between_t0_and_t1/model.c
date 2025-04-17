@@ -138,13 +138,6 @@ int applyResets(double voi, double *states, double *rates, double *constants, do
     }
 
     if (!isnan(resetConditions[0]) && (sign(resetConditions0) != sign(resetConditions[0]))) {
-        //---GRY--- TEMPORARILY APPLY THE RESET. IDEALLY, THE SOLVER WOULD USE THE CHANGE OF SIGN IN THE RESET CONDITION
-        //          TO FINE TUNE THE TRIGGERING OF THE RESET.
-
-        states[0] = 1.0;
-
-        resetConditions[0] = NAN;
-
         return 2;
     }
 

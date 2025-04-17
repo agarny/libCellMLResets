@@ -110,10 +110,7 @@ int main()
 
             if (ret == 0) {
                 break;
-            } else {
-                //---GRY--- TEMPORARILY HANDLE THE RESET WHETHER IT WAS TRIGGERED ON t1 (ret = 1) OR BETWEEN t0 AND t1
-                //          (ret = 2).
-
+            } else if (ret == 1) {
                 CVodeReInit(solver, voi, y);
 
                 computeVariables(voi, states, rates, constants, computedConstants, algebraic);
