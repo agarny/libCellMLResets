@@ -11,6 +11,7 @@ extern const size_t STATE_COUNT;
 extern const size_t CONSTANT_COUNT;
 extern const size_t COMPUTED_CONSTANT_COUNT;
 extern const size_t ALGEBRAIC_COUNT;
+extern const size_t RESET_COUNT;
 
 typedef struct {
     char name[2];
@@ -28,7 +29,7 @@ double * createStatesArray();
 double * createConstantsArray();
 double * createComputedConstantsArray();
 double * createAlgebraicArray();
-double * createResetConditionsArray();
+double * createResetsArray();
 
 void deleteArray(double *array);
 
@@ -37,4 +38,5 @@ void computeComputedConstants(double *constants, double *computedConstants);
 void computeRates(double voi, double *states, double *rates, double *constants, double *computedConstants, double *algebraic);
 void computeVariables(double voi, double *states, double *rates, double *constants, double *computedConstants, double *algebraic);
 
-int applyResets(double voi, double *states, double *rates, double *constants, double *computedConstants, double *algebraic, double *resetConditions);
+int computeResets(double voi, double *states, double *constants, double *computedConstants, double *algebraic, double *resets);
+void applyReset(double voi, double *states, double *constants, double *computedConstants, double *algebraic, int resetIndex);

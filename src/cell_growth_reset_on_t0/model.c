@@ -12,7 +12,7 @@ const size_t STATE_COUNT = 1;
 const size_t CONSTANT_COUNT = 0;
 const size_t COMPUTED_CONSTANT_COUNT = 0;
 const size_t ALGEBRAIC_COUNT = 0;
-const size_t RESET_CONDITIONS_COUNT = 1;
+const size_t RESET_COUNT = 1;
 
 const VariableInfo VOI_INFO = {"t", "dimensionless", "main"};
 
@@ -73,11 +73,11 @@ double * createAlgebraicArray()
     return res;
 }
 
-double * createResetConditionsArray()
+double * createResetsArray()
 {
-    double *res = (double *) malloc(RESET_CONDITIONS_COUNT*sizeof(double));
+    double *res = (double *) malloc(RESET_COUNT*sizeof(double));
 
-    for (size_t i = 0; i < RESET_CONDITIONS_COUNT; ++i) {
+    for (size_t i = 0; i < RESET_COUNT; ++i) {
         res[i] = NAN;
     }
 
@@ -107,41 +107,16 @@ void computeVariables(double voi, double *states, double *rates, double *constan
 {
 }
 
-int isNearlyZero(double value)
+int computeResets(double voi, double *states, double *constants, double *computedConstants, double *algebraic, double *resets)
 {
-    return fabs(value) <= 1e-7;
-}
-
-int sign(double value)
-{
-    if (value > 0.0) {
-        return 1;
-    }
-
-    if (value < 0.0) {
-        return -1;
-    }
+    resets[0] = states[0] - 2.0;
 
     return 0;
 }
 
-int applyResets(double voi, double *states, double *rates, double *constants, double *computedConstants, double *algebraic, double *resetConditions)
+void applyReset(double voi, double *states, double *constants, double *computedConstants, double *algebraic, int resetIndex)
 {
-    double resetConditions0 = states[0] - 2.0;
-
-    if (isNearlyZero(resetConditions0)) {
+    if (resetIndex == 0) {
         states[0] = 1.0;
-
-        resetConditions[0] = NAN;
-
-        return 1;
     }
-
-    if (!isnan(resetConditions[0]) && (sign(resetConditions0) != sign(resetConditions[0]))) {
-        return 2;
-    }
-
-    resetConditions[0] = resetConditions0;
-
-    return 0;
 }
