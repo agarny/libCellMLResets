@@ -97,7 +97,7 @@ int main()
     do {
         // Integrate our model.
 
-        CVode(solver, ++i * voiInterval, y, &voi, CV_NORMAL);
+        CVode(solver, (++i * voiInterval > voiMax) ? voiMax : i * voiInterval, y, &voi, CV_NORMAL);
 
         // Compute our variables.
 
