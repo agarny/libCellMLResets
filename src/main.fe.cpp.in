@@ -95,6 +95,10 @@ int main()
         double realStep = step;
 
         do {
+            // Backup our data.
+
+            backupData();
+
             // Determine what realStep and toVoi should be.
 
             double toVoi = fromVoi + ++voiCounter * step;
@@ -117,6 +121,35 @@ int main()
                     break;
                 } else if (ret == 1) {
                     computeVariables(voi, states, rates, constants, computedConstants, algebraic);
+                } else { // ret == 2.
+                    // The reset condition has changed sign, so we need to determine the point at which it did, this
+                    // using a binary search algorithm.
+
+                    double lVoi = oldVoi;
+                    double rVoi = voi;
+
+                    while (true) {
+                        retrieveData();
+
+                        double midVoi = 0.5 * (lVoi + rVoi);
+
+                        computeModel(midVoi - voi, midVoi);
+
+                        int midRet = applyResets(voi, states, rates, constants, computedConstants, algebraic, resetConditions);
+
+                        if (midRet == 1) {
+                            // We have found the point at which the reset condition changed sign, so we now need to
+                            // finish computing the model until voiEnd.
+
+                            computeModel(voiEnd - midVoi, voiEnd);
+
+                            break;
+                        } else if (midRet == 0) {
+                            lVoi = midVoi;
+                        } else { // midRet == 2.
+                            rVoi = midVoi;
+                        }
+                    }
                 }
             } while (true);
         } while (voi < voiEnd);
