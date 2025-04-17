@@ -79,6 +79,10 @@ int main()
 
     printHeaders(file);
 
+    // Check for reset conditions at the onset of the simulation.
+
+    applyResets(voi, states, rates, constants, computedConstants, algebraic, resetConditions);
+
     // Run our model.
 
     double voiMax = @ENDING_POINT@;
