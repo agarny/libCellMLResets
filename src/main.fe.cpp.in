@@ -127,7 +127,7 @@ int main()
 
     printHeaders(file);
 
-    // Check for reset conditions at the onset of the simulation.
+    // Check for resets at the start of the simulation.
 
     checkResets();
 
