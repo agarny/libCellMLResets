@@ -62,6 +62,9 @@ int main()
     printHeaders(file);
 
     // Check for resets at the start of the simulation.
+    // Note: this check must be done "manually" since we cannot use CVODE's root finding capability (through a call to
+    //       Cvode()) to check for resets at the start of the simulation. CVODE would indeed complain that "tout [is]
+    //       too close to t0 to start integration".
 
     double *resets = createResetsArray();
 
