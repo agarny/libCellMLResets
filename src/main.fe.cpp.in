@@ -191,9 +191,9 @@ int main()
 
                         if (midRet == 1) {
                             // We have found the point at which the reset condition changed sign, so we now need to
-                            // finish computing the model until voiEnd.
+                            // finish computing the model until toVoi.
 
-                            computeModel(voiEnd - midVoi, voiEnd);
+                            computeModel(toVoi - midVoi, toVoi);
 
                             break;
                         } else if (midRet == 0) {
