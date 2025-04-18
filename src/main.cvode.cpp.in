@@ -106,29 +106,35 @@ int main()
     printValues(file, voi, states, constants, computedConstants, algebraic);
 
     do {
-        // Integrate our model.
+        // Determine what realStep and toVoi should be.
 
-        int res = CVode(solver, (++i * voiInterval > voiMax) ? voiMax : i * voiInterval, y, &voi, CV_NORMAL);
+        double toVoi = (++i * voiInterval > voiMax) ? voiMax : i * voiInterval;
 
-        // Compute our variables.
+        do {
+            // Integrate our model.
 
-        computeVariables(voi, states, rates, constants, computedConstants, algebraic);
+            int res = CVode(solver, toVoi, y, &voi, CV_NORMAL);
 
-        // Check for resets.
-
-        if (res == CV_ROOT_RETURN) {
-            CVodeGetRootInfo(solver, rootsFound);
-
-            for (size_t i = 0; i < RESET_COUNT; ++i) {
-                if (rootsFound[i] != 0) {
-                    applyReset(voi, states, constants, computedConstants, algebraic, i);
-                }
-            }
-
-            CVodeReInit(solver, voi, y);
+            // Compute our variables.
 
             computeVariables(voi, states, rates, constants, computedConstants, algebraic);
-        }
+
+            // Check for resets.
+
+            if (res == CV_ROOT_RETURN) {
+                CVodeGetRootInfo(solver, rootsFound);
+
+                for (size_t i = 0; i < RESET_COUNT; ++i) {
+                    if (rootsFound[i] != 0) {
+                        applyReset(voi, states, constants, computedConstants, algebraic, i);
+                    }
+                }
+
+                CVodeReInit(solver, voi, y);
+
+                computeVariables(voi, states, rates, constants, computedConstants, algebraic);
+            }
+        } while (voi < toVoi);
 
         // Output the value of our states, constants, computed constants, and algebraic variables.
 
