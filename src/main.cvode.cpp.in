@@ -34,7 +34,7 @@ int rootFinding(double voi, N_Vector y, double *resets, void *userData)
 
 int isNearlyZero(double value)
 {
-    return fabs(value) <= __DBL_EPSILON__;
+    return fabs(value) <= 1e-13;
 }
 
 int main()
