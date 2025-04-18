@@ -32,6 +32,11 @@ int rootFinding(double voi, N_Vector y, double *resets, void *userData)
     return computeResets(voi, N_VGetArrayPointer_Serial(y), realUserData->constants, realUserData->computedConstants, realUserData->algebraic, resets);
 }
 
+int isNearlyZero(double value)
+{
+    return fabs(value) <= __DBL_EPSILON__;
+}
+
 int main()
 {
     // Create our various arrays.
@@ -55,6 +60,20 @@ int main()
     std::ofstream file("@EXECUTABLE_SOLVER@.csv");
 
     printHeaders(file);
+
+    // Check for resets at the start of the simulation.
+
+    double *resets = createResetsArray();
+
+    computeResets(voi, states, constants, computedConstants, algebraic, resets);
+
+    for (size_t i = 0; i < RESET_COUNT; ++i) {
+        if (isNearlyZero(resets[i])) {
+            applyReset(voi, states, constants, computedConstants, algebraic, i);
+        }
+    }
+
+    deleteArray(resets);
 
     // Create our SUNDIALS context.
 
