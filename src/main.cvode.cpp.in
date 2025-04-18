@@ -25,6 +25,13 @@ int func(double voi, N_Vector y, N_Vector yDot, void *userData)
     return 0;
 }
 
+int rootFinding(double voi, N_Vector y, double *resets, void *userData)
+{
+    UserOdeData *realUserData = (UserOdeData *) userData;
+
+    return computeResets(voi, N_VGetArrayPointer_Serial(y), realUserData->constants, realUserData->computedConstants, realUserData->algebraic, resets);
+}
+
 int main()
 {
     // Create our various arrays.
@@ -35,6 +42,7 @@ int main()
     double *constants = createConstantsArray();
     double *computedConstants = createComputedConstantsArray();
     double *algebraic = createAlgebraicArray();
+    int *rootsFound = new int[RESET_COUNT];
 
     // Initialise our states, rates, constants, computed constants, and algebraic variables and output their initial
     // value/guess.
@@ -85,6 +93,10 @@ int main()
 
     CVodeSStolerances(solver, 1.0e-7, 1.0e-7);
 
+    // Set our root finding function.
+
+    CVodeRootInit(solver, RESET_COUNT, rootFinding);
+
     // Run our model.
 
     size_t i = 0;
@@ -96,11 +108,27 @@ int main()
     do {
         // Integrate our model.
 
-        CVode(solver, (++i * voiInterval > voiMax) ? voiMax : i * voiInterval, y, &voi, CV_NORMAL);
+        int res = CVode(solver, (++i * voiInterval > voiMax) ? voiMax : i * voiInterval, y, &voi, CV_NORMAL);
 
         // Compute our variables.
 
         computeVariables(voi, states, rates, constants, computedConstants, algebraic);
+
+        // Check for resets.
+
+        if (res == CV_ROOT_RETURN) {
+            CVodeGetRootInfo(solver, rootsFound);
+
+            for (size_t i = 0; i < RESET_COUNT; ++i) {
+                if (rootsFound[i] != 0) {
+                    applyReset(voi, states, constants, computedConstants, algebraic, i);
+                }
+            }
+
+            CVodeReInit(solver, voi, y);
+
+            computeVariables(voi, states, rates, constants, computedConstants, algebraic);
+        }
 
         // Output the value of our states, constants, computed constants, and algebraic variables.
 
@@ -122,6 +150,7 @@ int main()
     deleteArray(constants);
     deleteArray(computedConstants);
     deleteArray(algebraic);
+    delete[] rootsFound;
 
     return 0;
 }
