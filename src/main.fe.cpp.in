@@ -68,7 +68,7 @@ void computeModel(double step, double voiEnd)
 
 int isNearlyZero(double value)
 {
-    return fabs(value) <= 1e-7;
+    return fabs(value) <= __DBL_EPSILON__;
 }
 
 int sign(double value)
