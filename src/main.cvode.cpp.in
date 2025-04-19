@@ -100,6 +100,10 @@ int main()
 
     CVodeSetUserData(solver, &userData);
 
+    // Set our maximum step.
+
+    CVodeSetMaxStep(solver, @STEP@);
+
     // Set our maximum number of steps.
 
     CVodeSetMaxNumSteps(solver, 99999);
