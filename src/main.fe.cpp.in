@@ -147,7 +147,7 @@ int main()
     do {
         size_t voiCounter = 0;
         double fromVoi = voi;
-        double voiEnd = (++voiIntervalCounter * voiInterval > voiMax) ? voiMax : voi + voiInterval;
+        double voiEnd = (++voiIntervalCounter * voiInterval > voiMax) ? voiMax : voiIntervalCounter * voiInterval;
         double realStep;
 
         do {
